@@ -12,7 +12,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Revobank API')
-    .setDescription('Dokumentasi API untuk sistem perbankan sederhana')
+    .setDescription('Banking System API Documentation')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
