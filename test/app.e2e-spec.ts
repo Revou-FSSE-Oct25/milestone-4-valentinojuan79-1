@@ -1,29 +1,44 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { App } from 'supertest/types';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './../src/app.module';
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication<App>;
+const request = require('supertest');
 
-  beforeEach(async () => {
+describe('Banking API (E2E Integration)', () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe()); 
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('/auth/register (POST) - Skenario Berhasil', () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .post('/auth/register')
+      .send({
+        email: `tester${Date.now()}@mail.com`,
+        password: 'Password123!',
+        name: 'E2E Tester'
+      })
+      .expect(201);
   });
 
-  afterEach(async () => {
+  it('/auth/login (POST) - Skenario Salah Password (401)', () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: 'ngasal@mail.com',
+        password: 'salah-total'
+      })
+      .expect(401);
+  });
+
+  afterAll(async () => {
     await app.close();
   });
 });
