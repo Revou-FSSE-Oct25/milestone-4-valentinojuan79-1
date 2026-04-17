@@ -27,8 +27,6 @@ export class AuthService {
         password: hashed,
       },
     });
-
-    // Perubahan ada di baris ini (tambah role)
     const token = this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
 
     return {
@@ -47,7 +45,6 @@ export class AuthService {
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) throw new UnauthorizedException('Invalid credentials');
 
-    // Perubahan ada di baris ini juga (tambah role)
     const token = this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
 
     return {

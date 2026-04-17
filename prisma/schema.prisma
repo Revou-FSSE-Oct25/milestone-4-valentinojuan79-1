@@ -4,43 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL)
-}
-
-model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  password  String
-  name      String
-  role      Role      @default(CUSTOMER)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  accounts  Account[]
-}
-
-model Account {
-  id             String      @id @default(uuid())
-  accountNumber  String      @unique
-  balance        Float       @default(0)
-  type           AccountType @default(SAVINGS)
-  userId         String
-  user           User        @relation(fields: [userId], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  sentTransactions     Transaction[] @relation("SenderAccount")
-  receivedTransactions Transaction[] @relation("ReceiverAccount")
-}
-
-model Transaction {
-  id                String          @id @default(uuid())
-  amount            Float
-  type              TransactionType
-  description       String?
-  senderAccountId   String?
-  receiverAccountId String?
-  senderAccount     Account?        @relation("SenderAccount", fields: [senderAccountId], references: [id])
-  receiverAccount   Account?        @relation("ReceiverAccount", fields: [receiverAccountId], references: [id])
-  createdAt         DateTime        @default(now())
 }
 
 enum Role {
@@ -57,4 +20,44 @@ enum TransactionType {
   DEPOSIT
   WITHDRAWAL
   TRANSFER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  idNumber      String?
+  phoneNumber   String?
+  address       String?
+  avatarUrl     String?
+  role          Role      @default(CUSTOMER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+}
+
+model Account {
+  id                    String            @id @default(uuid())
+  accountNumber         String            @unique
+  balance               Float             @default(0)
+  type                  AccountType       @default(SAVINGS)
+  userId                String
+  user                  User              @relation(fields: [userId], references: [id])
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  sentTransactions      Transaction[]     @relation("SenderAccount")
+  receivedTransactions  Transaction[]     @relation("ReceiverAccount")
+}
+
+model Transaction {
+  id                String          @id @default(uuid())
+  amount            Float
+  type              TransactionType
+  description       String?
+  senderAccountId   String?
+  receiverAccountId String?
+  senderAccount     Account?        @relation("SenderAccount", fields: [senderAccountId], references: [id])
+  receiverAccount   Account?        @relation("ReceiverAccount", fields: [receiverAccountId], references: [id])
+  createdAt         DateTime        @default(now())
 }
