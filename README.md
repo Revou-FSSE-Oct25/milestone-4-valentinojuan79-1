@@ -71,8 +71,11 @@ JWT_SECRET="your_super_secret_key"
 Push the Prisma schema to your database:
 
 ```bash
-npx prisma generate
-npx prisma db push
+# Generate Prisma Client and apply migrations to local DB
+npx prisma migrate dev --name init_revobank
+
+# To apply migrations in a production/staging environment:
+npx prisma migrate deploy
 ```
 
 ### 5. Run the Project
