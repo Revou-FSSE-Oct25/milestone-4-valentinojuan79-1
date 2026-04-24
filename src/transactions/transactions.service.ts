@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException, BadRequestException,ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { TransactionType } from '@prisma/client';
+import { TransactionType, Prisma } from '@prisma/client'; // Tambahkan Prisma di sini
 import { WithdrawDto } from './dto/withdraw.dto';
 import { DepositDto } from './dto/deposit.dto';
 import { TransferDto } from './dto/transfer.dto';
@@ -50,9 +50,9 @@ export class TransactionsService {
 
   async withdraw(userId: string, dto: WithdrawDto) {
     const { accountId, amount } = dto;
-
     const account = await this.getOwnedAccount(userId, accountId);
-    if (account.balance < amount) {
+    const withdrawAmount = new Prisma.Decimal(amount);
+    if (account.balance.lessThan(withdrawAmount)) {
       throw new BadRequestException('Transaksi gagal: Saldo tidak mencukupi.');
     }
 
@@ -85,7 +85,9 @@ export class TransactionsService {
     }
 
     const senderAccount = await this.getOwnedAccount(userId, senderAccountId);
-    if (senderAccount.balance < amount) {
+    
+    const transferAmount = new Prisma.Decimal(amount);
+    if (senderAccount.balance.lessThan(transferAmount)) {
       throw new BadRequestException('Transaksi gagal: Saldo pengirim tidak mencukupi.');
     }
 

@@ -64,7 +64,7 @@ export class AccountsService {
 
   async remove(userId: string, accountId: string) {
     const accountRecord = await this.findOne(userId, accountId);
-    if (accountRecord.data.balance > 0) {
+    if (accountRecord.data.balance.greaterThan(0)) {
       throw new BadRequestException('Penghapusan gagal: Rekening masih memiliki saldo. Silakan tarik atau transfer dana terlebih dahulu.');
     }
     await this.prisma.account.delete({
